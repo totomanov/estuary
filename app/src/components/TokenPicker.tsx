@@ -3,12 +3,18 @@ import React from 'react'
 import TokenButton from './TokenButton'
 import { tokens } from '../tokens'
 
+type Props = {
+    onSelected: (e: any) => void
+}
 
-function TokenPicker() {
+function TokenPicker({ onSelected }: Props) {
     const { getRootProps, getRadioProps } = useRadioGroup({
         name: 'token',
         defaultValue: 'wNEON',
-        onChange: console.log,
+        onChange: (e) => {
+            console.log(e);
+            return onSelected(e);
+        }
     })
 
     const group = getRootProps()
