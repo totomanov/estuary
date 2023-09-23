@@ -11,6 +11,16 @@ function DurationPicker({ onSelected }: Props) {
     const oneDay = 86400;
     const options = [
         {
+            unit: 'min',
+            amount: '60',
+            value: '3600',
+        },
+        {
+            unit: 'hours',
+            amount: '24',
+            value: `${oneDay}`,
+        },
+        {
             unit: 'days',
             amount: '7',
             value: `${7 * oneDay}`,
@@ -19,16 +29,6 @@ function DurationPicker({ onSelected }: Props) {
             unit: 'days',
             amount: '30',
             value: `${30 * oneDay}`,
-        },
-        {
-            unit: 'days',
-            amount: '90',
-            value: `${90 * oneDay}`,
-        },
-        {
-            unit: 'days',
-            amount: '365',
-            value: `${365 * oneDay}`,
         },
     ]
 

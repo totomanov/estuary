@@ -26,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <WagmiConfig config={wagmiConfig}>
         <App />
       </WagmiConfig>
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} themeVariables={{
+        "--w3m-accent-color": "#dc44ac"
+      }} />
 
     </ChakraProvider>
   </React.StrictMode>,

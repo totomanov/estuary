@@ -28,7 +28,7 @@ function DurationButton(props: any) {
                 p={8}
             >
                 <Heading size="md">{props.amount}</Heading>
-                <Text fontSize="md">{props.unit}</Text>
+                <Text fontSize="md" color="gray.200">{props.unit}</Text>
             </Flex>
         </Box>
     )

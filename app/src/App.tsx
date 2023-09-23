@@ -8,6 +8,7 @@ import { formatUnits } from 'viem'
 import { estuaryAddress } from './constants'
 import estuaryArtifact from "../../contracts/artifacts/src/Estuary.sol/Estuary.json";
 import MyFlows, { Flow } from './components/MyFlows'
+import AllFlows from './components/AllFlows'
 
 function App() {
   const { address } = useAccount();
@@ -21,7 +22,7 @@ function App() {
 
   const [flows, setFlows] = useState<Flow[]>([]);
 
-  const { data: rawTokenData, isTokenDataLoading } = useContractReads({
+  const { data: rawTokenData, isLoading: isTokenDataLoading } = useContractReads({
     contracts: tokens.map((token) => [
       {
         ...getTokenContract(token),
@@ -37,7 +38,7 @@ function App() {
     enabled: !!address,
   });
 
-  const { data: rawFlowData, isFlowDataLoading } = useContractRead({
+  const { data: rawFlowData, isLoading: isFlowDataLoading } = useContractRead({
     address: estuaryAddress,
     abi: estuaryArtifact.abi,
     functionName: 'getAllStreams',
@@ -67,13 +68,15 @@ function App() {
 
       <GridItem h='100vh' bgColor="gray.900" py={6} px={8} color="white">
         <Flex direction="column" gap={6}>
-          <Heading size="lg">Welcome!</Heading>
-          <Web3Button />
+          <Flex direction="column" gap={2}>
+            <Heading size="lg">Welcome!</Heading>
+            <Web3Button />
+          </Flex>
           <Flex direction="column" gap={2}>
             <Heading size="lg">Balances</Heading>
             {tokens.map((token) => (
               <Flex direction="row" align="center" gap={2} key={token.symbol}>
-                <Image w={8} h={8} src={token.logo} />
+                <Image w={6} h={6} src={token.logo} />
                 <Text fontSize="md" fontWeight="semibold">{token.symbol}</Text>
                 <Skeleton isLoaded={!isTokenDataLoading} height={5}>
                   <Text fontSize="sm" color="gray.300">{formatUnits(tokenBalances[token.symbol] ?? 0n, token.decimals)}</Text>
@@ -84,15 +87,22 @@ function App() {
         </Flex>
       </GridItem>
 
-      <GridItem h='100vh' bgColor="gray.800" colSpan={5} py={6} px={8} color="white">
+      <GridItem h='100vh' bgColor="gray.800" colSpan={3} py={6} px={8} color="white">
         <Flex direction="column" gap={6}>
-          <Flex direction="column" gap={2}>
-            <Heading size="lg">Flows</Heading>
-            {!isFlowDataLoading && <MyFlows flows={flows} />}
-          </Flex>
-          <Flex direction="column" maxW='lg' gap={2}>
+          <Flex direction="column" maxW='lg' gap={4}>
             <Heading size="lg">Estuary</Heading>
             <EstuaryForm tokenBalances={tokenBalances} tokenAllowances={tokenAllowances} />
+          </Flex>
+        </Flex>
+      </GridItem>
+
+      <GridItem h='100vh' bgColor="gray.800" colSpan={2} py={6} px={8} color="white">
+        <Flex direction="column" gap={6}>
+          <Flex direction="column" gap={2}>
+            <Heading size="lg">Feed</Heading>
+            {!isFlowDataLoading && <AllFlows flows={flows} />}
+          </Flex>
+          <Flex direction="column" gap={2}>
           </Flex>
         </Flex>
       </GridItem>

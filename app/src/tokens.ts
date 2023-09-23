@@ -1,5 +1,5 @@
 import wNEON from "./images/wNEON.svg"
-import USDT from "./images/USDT.svg"
+import USDT from "./images/USDT.png"
 import USDC from "./images/USDC.svg"
 
 import erc20Abi from "../../contracts/artifacts/src/interfaces/IERC20.sol/IERC20.json";

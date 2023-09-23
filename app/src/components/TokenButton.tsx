@@ -14,6 +14,7 @@ function TokenButton(props: any) {
                 direction="column"
                 align="center"
                 justify="center"
+                gap={1}
                 w={16}
                 h={16}
                 cursor='pointer'
@@ -27,8 +28,8 @@ function TokenButton(props: any) {
                 p={2}
                 {...checkbox}
             >
-                <Image w={8} h={8} src={props.token.logo} borderRadius='full' />
-                <Text fontSize="sm">{props.token.symbol}</Text>
+                <Image w={6} h={6} src={props.token.logo} borderRadius='full' />
+                <Text fontSize="sm" fontWeight="semibold">{props.token.symbol}</Text>
             </Flex>
         </Box>
     )

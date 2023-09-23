@@ -3,10 +3,13 @@ import { Card, Button, Flex, Image, Text, Progress, Divider, Box } from "@chakra
 
 import AddressBadge from './AddressBadge'
 import { resolveTokenByAddress } from '../tokens'
-import { formatUnits } from 'viem'
+import { formatUnits, parseUnits } from 'viem'
 import { Flow } from './MyFlows'
 import { FaClock, FaCoins } from "react-icons/fa";
 import moment from 'moment'
+import { usePrepareContractWrite } from 'wagmi'
+import { estuaryAddress } from '../constants'
+import estuaryArtifact from "../../../contracts/artifacts/src/Estuary.sol/Estuary.json";
 
 
 type Props = {
@@ -23,6 +26,14 @@ function FlowCard({ flow, isRecipient, isSponsor }: Props) {
     const token = resolveTokenByAddress(flow.stream.token);
 
     const timeLeft = hasEnded ? 'ended' : moment().add(Number(end - now), "seconds").fromNow();
+
+    const prepareApprove = usePrepareContractWrite({
+        address: estuaryAddress,
+        abi: estuaryArtifact.abi,
+        functionName: 'claimStream',
+        args: [flow.id],
+        enabled: flow.claimable > 0 && isRecipient
+    });
 
     return (
         <Card w={64} rounded="md" px={4} py={4} bgColor="gray.700" color="white" >
@@ -58,7 +69,7 @@ function FlowCard({ flow, isRecipient, isSponsor }: Props) {
                     <Text fontSize="sm">{formatUnits(flow.claimable, token.decimals)}</Text>
                 </Flex>
                 {
-                    !isRecipient && (
+                    flow.claimable > 0 && isRecipient && (
                         <Button variant='link' colorScheme='pink' color="pink.400" size="xs">
                             Claim
                         </Button>

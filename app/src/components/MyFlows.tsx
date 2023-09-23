@@ -27,8 +27,6 @@ type Props = {
 function MyFlows({ flows }: Props) {
     const { address } = useAccount();
 
-    if (!address) return <Spinner />
-
     const isSponsor = (flow: Flow) => !address ? false : flow.stream.sponsor.toLowerCase() === address.toLowerCase();
     const isRecipient = (flow: Flow) => !address ? false : flow.stream.recipient.toLowerCase() === address.toLowerCase();
     return (<Flex direction="row">

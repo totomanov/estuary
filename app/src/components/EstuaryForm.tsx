@@ -30,7 +30,7 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
     const hasBalance = userAddress ? tokenBalances[token.symbol] >= parseUnits(amount, token.decimals) : false;
     const hasAllowance = userAddress ? tokenAllowances[token.symbol] >= parseUnits(amount, token.decimals) : false;
 
-    const isAmountError = parseUnits(amount, token.decimals) === 0n || !hasBalance;
+    const isAmountError = +amount < 0 || parseUnits(amount, token.decimals) === 0n || !hasBalance;
 
     const prepareCreateStream = usePrepareContractWrite({
         address: estuaryAddress,
@@ -45,7 +45,7 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
         abi: erc20Abi.abi,
         functionName: 'approve',
         args: [estuaryAddress, parseUnits(amount, token.decimals)],
-        enabled: !hasAllowance && !isRecipientError
+        enabled: !hasAllowance && !isRecipientError && !isAmountError
     });
 
     useEffect(() => {
@@ -63,16 +63,15 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
 
     return (
         <>
-            <FormControl>
+            <FormControl isInvalid={isRecipientError && recipient != ''}>
                 <FormLabel>Recipient</FormLabel>
                 <Input placeholder='0xc0ffeebabe...' onChange={(e) => setRecipient(e.target.value)} />
                 {
-                    !isRecipientError ?
-                        <FormHelperText>
-                            Enter the ENS or wallet address of the recipient
+                    isRecipientError && recipient != '' ?
+                        <FormErrorMessage>Invalid recipient address</FormErrorMessage> :
+                        <FormHelperText color="gray.400">
+                            Enter the wallet address of the recipient
                         </FormHelperText>
-                        :
-                        <FormErrorMessage>Invalid recipient address</FormErrorMessage>
                 }
             </FormControl>
 
@@ -82,8 +81,8 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
                     const token = resolveTokenBySymbol(symbol);
                     setToken(token);
                 }} />
-                <FormHelperText>
-                    Choose your token
+                <FormHelperText color="gray.400">
+                    Choose the token to send
                 </FormHelperText>
             </FormControl>
 
@@ -91,7 +90,7 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
                 <FormLabel>Amount</FormLabel>
                 <Input type="number" placeholder='1234.56' onChange={(e) => setAmount(e.target.value)} />
                 {
-                    hasBalance ? (<FormHelperText>
+                    hasBalance ? (<FormHelperText color="gray.400">
                         Enter the amount of tokens to stream
                     </FormHelperText>) : (
                         <FormErrorMessage>
@@ -107,12 +106,12 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
                 <DurationPicker onSelected={(value) => {
                     setDuration(value);
                 }} />
-                <FormHelperText>
+                <FormHelperText color="gray.400">
                     Choose the length of the flow
                 </FormHelperText>
             </FormControl>
 
-            <Button size="lg" colorScheme="pink" isDisabled={isRecipientError || isAmountError} onClick={(e) => {
+            <Button size="lg" colorScheme="pink" isDisabled={isRecipientError || isAmountError} mt={2} onClick={(e) => {
                 e.preventDefault()
                 !hasAllowance ? writeApprove?.() : writeCreateStream?.()
             }}>
@@ -128,14 +127,14 @@ function EstuaryForm({ tokenBalances, tokenAllowances }: Props) {
 
 
             {prepareApprove.isError &&
-                <Alert status='error'>
+                <Alert status='error' color="gray.700">
                     <AlertIcon />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{prepareApprove.error?.message}</AlertDescription>
                 </Alert>}
 
             {prepareCreateStream.isError &&
-                <Alert status='error'>
+                <Alert status='error' color="gray.700">
                     <AlertIcon />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{prepareCreateStream.error?.message}</AlertDescription>
