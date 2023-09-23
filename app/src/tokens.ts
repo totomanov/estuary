@@ -15,25 +15,19 @@ export type Token = {
 export const tokens: Token[] = [
   {
     symbol: 'wNEON',
-    address: "0x202c35e517fa803b537565c40f0a6965d7204609",
+    address: "0x11adC2d986E334137b9ad0a0F290771F31e9517F",
     decimals: 18,
     logo: wNEON,
   },
   {
-    symbol: 'wSOL',
-    address: "0xc7Fc9b46e479c5Cb42f6C458D1881e55E6B7986c",
-    decimals: 18,
-    logo: wSOL,
-  },
-  {
     symbol: 'USDT',
-    address: "0x5f0155d08eF4aaE2B500AefB64A3419dA8bB611a",
+    address: "0x6eEf939FC6e2B3F440dCbB72Ea81Cd63B5a519A5",
     decimals: 6,
     logo: USDT,
   },
   {
     symbol: 'USDC',
-    address: "0xEA6B04272f9f62F997F666F07D3a974134f7FFb9",
+    address: "0x512E48836Cd42F3eB6f50CEd9ffD81E0a7F15103",
     decimals: 6,
     logo: USDC,
   },

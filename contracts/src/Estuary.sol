@@ -11,6 +11,7 @@ contract Estuary {
     error CallerNotRecipient(uint256 id);
     error CallerNotSponsor(uint256 id);
     error InvalidRecipient(address recipient);
+    error InvalidDuration(uint64 duration);
     error StreamDoesNotExist(uint256 id);
     error StreamAlreadyCancelled(uint256 id);
     error StreamExpired(uint256 id);
@@ -30,9 +31,10 @@ contract Estuary {
         uint64 lastClaim;
     }
 
-    function createStream(address recipient, address token, uint192 amount, uint64 end) external returns (uint256) {
+    function createStream(address recipient, address token, uint192 amount, uint64 duration) external returns (uint256) {
         if (recipient == address(0) || recipient == address(this)) revert InvalidRecipient(recipient);
         if (amount == 0) revert ZeroAmount();
+        if (duration == 0) revert InvalidDuration(duration);
 
         uint256 balanceBefore = IERC20(token).balanceOf(address(this));
         SafeTransferLib.safeTransferFrom(token, msg.sender, address(this), amount);
@@ -47,7 +49,7 @@ contract Estuary {
             token: token,
             amount: amount,
             start: uint64(block.timestamp),
-            end: end,
+            end: uint64(block.timestamp) + duration,
             lastClaim: 0
         });
         uint256 id = nextId++;

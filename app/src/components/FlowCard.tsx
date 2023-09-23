@@ -6,8 +6,6 @@ import { Token } from '../tokens'
 import { useAccount } from 'wagmi'
 import { formatUnits } from 'viem'
 
-
-
 type Props = {
     from: string,
     to: string,
