@@ -3,13 +3,15 @@ import { Button, Flex, FormControl, FormHelperText, FormLabel, Grid, GridItem, H
 import Duration from './components/Duration'
 import TokenPicker from './components/TokenPicker'
 import FlowCard from './components/FlowCard'
+import { Web3Button } from '@web3modal/react'
+
 
 function App() {
   return (
-    <Grid templateColumns='repeat(6, 1fr)' p={6}>
+    <Grid templateColumns='repeat(5, 1fr)' p={6}>
 
       <GridItem h='100%'>
-        Left
+        <Web3Button />
       </GridItem>
 
       <GridItem h='100%' colSpan={4}>
@@ -25,8 +27,7 @@ function App() {
               to={'v.eth'}
               token='wNEON' />
           </Flex>
-          <Flex direction="column" gap={2}>
-
+          <Flex direction="column" maxW='lg' gap={2}>
             <Heading size="lg">Estuary</Heading>
 
             <FormControl>
@@ -63,10 +64,6 @@ function App() {
             <Button size="lg">Create</Button>
           </Flex>
         </Flex>
-      </GridItem>
-
-      <GridItem h='100%'>
-        Right
       </GridItem>
     </Grid >
   )

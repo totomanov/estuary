@@ -27,8 +27,8 @@ function TokenButton(props: any) {
                 p={2}
                 {...checkbox}
             >
-                <Image w={8} h={8} src={props.icon} borderRadius='full' />
-                <Text fontSize="sm">{props.symbol}</Text>
+                <Image w={8} h={8} src={props.token.logo} borderRadius='full' />
+                <Text fontSize="sm">{props.token.symbol}</Text>
             </Flex>
         </Box>
     )
