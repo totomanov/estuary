@@ -75,8 +75,14 @@ contract Estuary {
         Stream storage stream = streams[id];
         if (block.timestamp <= stream.start) return 0;
         if (block.timestamp == stream.lastClaim) return 0;
+        if (block.timestamp >= stream.end && stream.lastClaim >= stream.end) return 0;
 
-        uint256 claimed = stream.amount * (stream.lastClaim - stream.start) / (stream.end - stream.start);
+
+        uint256 claimed;
+        if (stream.lastClaim > 0) {
+            claimed = stream.amount * (stream.lastClaim - stream.start) / (stream.end - stream.start);
+        }
+
         if (block.timestamp >= stream.end) {
             return stream.amount - claimed;
         }
