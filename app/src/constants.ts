@@ -1,1 +1,1 @@
-export const estuaryAddress = "0x23EEa5A2AbC8B3988ed6c37a1D8F4258E8de1bef";
+export const estuaryAddress = "0x696Ca9CCf3823bfa08F78016743003E5DaB4DEd4";

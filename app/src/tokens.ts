@@ -1,5 +1,4 @@
 import wNEON from "./images/wNEON.svg"
-import wSOL from "./images/wSOL.svg"
 import USDT from "./images/USDT.svg"
 import USDC from "./images/USDC.svg"
 
@@ -34,6 +33,7 @@ export const tokens: Token[] = [
 ];
 
 export const resolveTokenBySymbol = (symbol: string): Token => tokens.find((token) => token.symbol === symbol) ?? tokens[0];
+export const resolveTokenByAddress = (address: string): Token => tokens.find((token) => token.address.toLowerCase() === address.toLowerCase()) ?? tokens[0];
 export const getTokenContract = (token: Token) => ({
   address: token.address,
   abi: erc20Abi.abi,

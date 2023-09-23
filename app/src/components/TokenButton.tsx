@@ -18,7 +18,6 @@ function TokenButton(props: any) {
                 h={16}
                 cursor='pointer'
                 borderWidth='1px'
-                borderColor="gray.700"
                 borderRadius='md'
                 _checked={{
                     bg: 'pink.500',
