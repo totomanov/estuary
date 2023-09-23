@@ -4,19 +4,30 @@ import FlowCard from './components/FlowCard'
 import { Web3Button } from '@web3modal/react'
 import EstuaryForm from './components/EstuaryForm'
 import { getTokenContract, tokens } from './tokens'
-import { useAccount, useContractReads } from 'wagmi'
+import { useAccount, useContractRead, useContractReads } from 'wagmi'
 import { formatUnits } from 'viem'
+import { estuaryAddress } from './constants'
+import estuaryArtifact from "../../contracts/artifacts/src/Estuary.sol/Estuary.json";
+
+type Flow = {
+  from: string,
+  to: string
+  amount: bigint
+}
 
 function App() {
   const { address } = useAccount();
   const [tokenBalances, setTokenBalances] = useState<{
     [symbol: string]: bigint
   }>({});
+
   const [tokenAllowances, setTokenAllowances] = useState<{
     [symbol: string]: bigint
   }>({});
 
-  const { data: rawData, isError, isLoading } = useContractReads({
+  const [flows, setFlows] = useState<Flow[]>([]);
+
+  const { data: rawTokenData, isTokenDataLoading } = useContractReads({
     contracts: tokens.map((token) => [
       {
         ...getTokenContract(token),
@@ -26,28 +37,32 @@ function App() {
       {
         ...getTokenContract(token),
         functionName: 'allowance',
-        args: [address,]
+        args: [address, estuaryAddress]
       },
     ]).flat(),
     enabled: !!address,
   });
 
-  useEffect(() => {
-    console.log("raw", rawData);
-    console.log("input", tokens.map((token) => [
-      {
-        ...getTokenContract(token),
-        functionName: 'balanceOf',
-        args: [address]
-      },
-    ]).flat(),);
-    const newTokenBalances: { [symbol: string]: bigint } = {};
-    rawData?.forEach(({ result }, i) => {
-      newTokenBalances[tokens[i].symbol] = result as bigint
-    })
-    setTokenBalances(newTokenBalances);
-  }, [rawData]);
+  const { data: rawFlowData, isFlowDataLoading } = useContractRead({
+    address: estuaryAddress,
+    abi: estuaryArtifact.abi,
+    functionName: 'getAllStreams',
+  });
 
+  useEffect(() => {
+    console.log("Raw token data", rawTokenData);
+    console.log("Raw flow data", rawFlowData);
+    const newTokenBalances: { [symbol: string]: bigint } = {};
+    const newTokenAllowances: { [symbol: string]: bigint } = {};
+
+    for (let i = 0; i < (rawTokenData?.length ?? 0); i += 2) {
+      const j = Math.floor(i / 2);
+      newTokenBalances[tokens[j].symbol] = (rawTokenData?.[i]?.result ?? 0n) as bigint
+      newTokenAllowances[tokens[j].symbol] = (rawTokenData?.[i + 1]?.result ?? 0n) as bigint
+    }
+    setTokenBalances(newTokenBalances);
+    setTokenAllowances(newTokenAllowances);
+  }, [rawTokenData, address]);
 
   return (
     <Grid templateColumns='repeat(6, 1fr)'>
@@ -63,7 +78,7 @@ function App() {
                 <Image w={8} h={8} src={token.logo} />
                 <Flex direction="column" gap={0}>
                   <Text fontSize="md" fontWeight="semibold">{token.symbol}</Text>
-                  <Skeleton isLoaded={!isLoading} height={3}>
+                  <Skeleton isLoaded={!isTokenDataLoading} height={3}>
                     <Text fontSize="xs" color="gray.300">{formatUnits(tokenBalances[token.symbol] ?? 0n, token.decimals)}</Text>
                   </Skeleton>
                 </Flex>
@@ -88,7 +103,7 @@ function App() {
           </Flex>
           <Flex direction="column" maxW='lg' gap={2}>
             <Heading size="lg">Estuary</Heading>
-            <EstuaryForm />
+            <EstuaryForm tokenBalances={tokenBalances} tokenAllowances={tokenAllowances} />
           </Flex>
         </Flex>
       </GridItem>

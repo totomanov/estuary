@@ -67,7 +67,7 @@ contract Estuary {
 
         uint256 claimable = getClaimable(id);
 
-        SafeTransferLib.safeTransfer(stream.token, msg.sender, stream.amount);
+        SafeTransferLib.safeTransfer(stream.token, msg.sender, claimable);
         stream.lastClaim = uint64(block.timestamp);
     }
 
@@ -84,5 +84,30 @@ contract Estuary {
         uint256 cumulative = stream.amount * (block.timestamp - stream.start) / (stream.end - stream.start);
 
         return cumulative - claimed;
+    }
+
+    struct StreamWithData {
+        Stream stream;
+        uint256 id;
+        uint256 claimable;
+    }
+
+    function getAllStreams() external view returns (StreamWithData[] memory) {
+        return getStreams(0, nextId);
+    }
+
+    function getStreams(uint fromId, uint toId) public view returns (StreamWithData[] memory) {
+        StreamWithData[] memory s = new StreamWithData[](toId - fromId);
+
+        for(uint id = fromId; id < toId;) {
+            s[id - fromId] = StreamWithData({
+                stream: streams[id],
+                id: id,
+                claimable: getClaimable(id)
+            });
+            unchecked { ++id; }
+        }
+
+        return s;
     }
 }
