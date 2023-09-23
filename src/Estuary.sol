@@ -8,11 +8,17 @@ contract Estuary {
     uint256 public nextId;
     mapping(uint256 id => Stream stream) public streams;
 
+    error CallerNotRecipient(uint256 id);
+    error CallerNotSponsor(uint256 id);
     error InvalidRecipient(address recipient);
+    error StreamDoesNotExist(uint256 id);
+    error StreamAlreadyCancelled(uint256 id);
+    error StreamExpired(uint256 id);
     error ZeroAmount();
     error ZeroAmountTransferred();
 
     event StreamCreated(uint256 id, Stream stream);
+    event StreamCancelled(uint256 id);
 
     struct Stream {
         address sponsor;
@@ -50,5 +56,31 @@ contract Estuary {
         emit StreamCreated(id, stream);
 
         return id;
+    }
+
+    function claimStream(uint256 id) external {
+        Stream storage stream = streams[id];
+        if (stream.sponsor == address(0)) revert StreamDoesNotExist(id);
+        if (stream.recipient != msg.sender) revert CallerNotRecipient(id);
+
+        uint256 claimable = getClaimable(id);
+
+        SafeTransferLib.safeTransfer(stream.token, msg.sender, stream.amount);
+        stream.lastClaim = uint64(block.timestamp);
+    }
+
+    function getClaimable(uint256 id) public view returns (uint256) {
+        Stream storage stream = streams[id];
+        if (block.timestamp <= stream.start) return 0;
+        if (block.timestamp == stream.lastClaim) return 0;
+
+        uint256 claimed = stream.amount * (stream.lastClaim - stream.start) / (stream.end - stream.start);
+        if (block.timestamp >= stream.end) {
+            return stream.amount - claimed;
+        }
+
+        uint256 cumulative = stream.amount * (block.timestamp - stream.start) / (stream.end - stream.start);
+
+        return cumulative - claimed;
     }
 }

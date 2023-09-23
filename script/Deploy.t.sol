@@ -10,7 +10,7 @@ contract Deploy is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
-
+        console2.log(address(this));
         Estuary estuary = new Estuary();
         vm.stopBroadcast();
     }
