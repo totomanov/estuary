@@ -6,8 +6,8 @@ import TokenPicker from './TokenPicker';
 import { Token, getTokenContract, resolveTokenBySymbol, tokens } from '../tokens';
 import { useDebounce } from 'usehooks-ts';
 import { isAddress } from 'viem'
-import { fetchBalance } from 'wagmi/actions';
 import DurationPicker from './DurationPicker';
+import erc20Abi from "../../../contracts/artifacts/src/interfaces/IERC20.sol/IERC20.json";
 
 function EstuaryForm() {
     const [recipient, setRecipient] = useState('0xDaf1E1a15B8634280A07964e398B288bb8CF79e6');
@@ -23,10 +23,12 @@ function EstuaryForm() {
     const tokenContract = getTokenContract(token);
     const userTokenData = useContractReads({
         contracts: [{
-            ...tokenContract,
-            functionName: 'balanceOf'
+            address: token.address as `0x${string}`,
+            abi: erc20Abi.abi,
+            functionName: 'balanceOf',
+            args: [userAddress],
         }],
-        // enabled: !!userAddress
+        enabled: !!userAddress
     });
 
     const { config, error, isError } = usePrepareContractWrite({
@@ -36,6 +38,10 @@ function EstuaryForm() {
         args: [debouncedRecipient, debouncedToken.address, amount, duration],
         enabled: !isRecipientError
     });
+
+    useEffect(() => {
+        console.log(userTokenData.data);
+    }, [userTokenData])
 
     const { write } = useContractWrite(config)
 
@@ -82,7 +88,7 @@ function EstuaryForm() {
                     Choose the length of the flow
                 </FormHelperText>
             </FormControl>
-            <Button size="lg" disabled={!write} onClick={(e) => {
+            <Button size="lg" colorScheme="pink" disabled={!write} onClick={(e) => {
                 e.preventDefault()
                 write?.()
             }}>Create</Button>

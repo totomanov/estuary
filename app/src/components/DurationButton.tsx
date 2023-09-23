@@ -29,7 +29,6 @@ function DurationButton(props: any) {
             >
                 <Heading size="md">{props.amount}</Heading>
                 <Text fontSize="md">{props.unit}</Text>
-                {/* {props.children} */}
             </Flex>
         </Box>
     )
