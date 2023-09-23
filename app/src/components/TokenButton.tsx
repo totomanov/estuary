@@ -1,8 +1,5 @@
 import React from 'react'
-import { Box, Flex, Heading, Text, Image, useRadio } from "@chakra-ui/react"
-import wNEON from "../images/wNEON.svg"
-import USDC from "../images/USDC.svg"
-import USDT from "../images/USDT.svg"
+import { Box, Flex, Text, Image, useRadio } from "@chakra-ui/react"
 
 function TokenButton(props: any) {
     const { getInputProps, getRadioProps } = useRadio(props)
